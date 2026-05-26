@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Best Move Detector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+            gap: 30px;
+        }
+        
+        .board-section {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .move-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .image-container {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+        
+        .controls {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .turn-selector {
+            margin: 20px 0;
+        }
+        
+        .turn-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .turn-btn.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .best-move {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .human-move {
+            font-size: 1.3em;
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .info p {
+            margin: 5px 0;
+        }
+        
+        .status {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .best-move {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Chess Best Move Detector</h1>
+        </div>
+        
+        <div class="content">
+            <div class="board-section">
+                <div class="image-container">
+                    <div id="boardImage">
+                        <div class="loading">Loading chess board...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="move-section">
+                <div class="controls">
+                    <h3>Whose turn is it?</h3>
+                    <div class="turn-selector">
+                        <button id="whiteBtn" class="turn-btn active">⚪ White to move</button>
+                        <button id="blackBtn" class="turn-btn">⚫ Black to move</button>
+                    </div>
+                    <button id="analyzeBtn" class="analyze-btn">Analyze Position</button>
+                </div>
+                
+                <div id="result" style="display: none;"></div>
+                <div id="status"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentTurn = 'w';
+        
+        // Turn selection
+        document.getElementById('whiteBtn').addEventListener('click', () => {
+            currentTurn = 'w';
+            document.getElementById('whiteBtn').classList.add('active');
+            document.getElementById('blackBtn').classList.remove('active');
+        });
+        
+        document.getElementById('blackBtn').addEventListener('click', () => {
+            currentTurn = 'b';
+            document.getElementById('blackBtn').classList.add('active');
+            document.getElementById('whiteBtn').classList.remove('active');
+        });
+        
+        // Load image on page load
+        async function loadImage() {
+            try {
+                const response = await fetch('/load_image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const imgHtml = `<img src="data:image/jpeg;base64,${data.image}" alt="Chess Board">`;
+                    document.getElementById('boardImage').innerHTML = imgHtml;
+                } else {
+                    showStatus('error', `Error: ${data.error}`);
+                }
+            } catch (error) {
+                showStatus('error', `Error loading image: ${error.message}`);
+            }
+        }
+        
+        // Analyze position
+        async function analyzePosition() {
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const resultDiv = document.getElementById('result');
+            
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Analyzing...';
+            resultDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ turn: currentTurn })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Display results
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `
+                        <div class="result-card">
+                            <h3> Analysis Complete!</h3>
+                            <div class="best-move">
+                                ${data.san_move}
+                            </div>
+                            <div class="human-move">
+                                ${data.human_move}
+                            </div>
+                            <div class="info">
+                                <p><strong>FEN:</strong> ${data.fen}</p>
+                                <p><strong>Turn:</strong> ${data.turn}</p>
+                                <p><strong>Pieces Detected:</strong> ${data.pieces_detected}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `
+                        <div class="result-card" style="background: #dc3545;">
+                            <h3> Error</h3>
+                            <p>${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                showStatus('error', `Error: ${error.message}`);
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = 'Analyze Position';
+            }
+        }
+        
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => {
+                if (statusDiv.innerHTML === `<div class="status ${type}">${message}</div>`) {
+                    statusDiv.innerHTML = '';
+                }
+            }, 5000);
+        }
+        
+        // Load image when page loads
+        loadImage();
+        
+        // Analyze button click
+        document.getElementById('analyzeBtn').addEventListener('click', analyzePosition);
+    </script>
+</body>
+</html>

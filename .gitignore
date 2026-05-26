@@ -1,0 +1,103 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+pip-wheel-metadata/
+.installed.cfg
+lib/
+lib64/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# OpenCV_actions specific
+openCV_actions/models/*.caffemodel
+openCV_actions/models/*.pth
+openCV_actions/models/*.pt
+openCV_actions/models/*.onnx
+openCV_actions/models/*.weights
+openCV_actions/__pycache__/
+openCV_actions/*.log
+openCV_actions/logs/
+openCV_actions/.mediapipe/
+
+# Keep model config files in openCV_actions
+!openCV_actions/models/*.prototxt
+!openCV_actions/models/*.yaml
+
+# Chess_best_move specific
+Chess_best_move/models/*.pt
+Chess_best_move/models/*.pth
+Chess_best_move/models/*.onnx
+Chess_best_move/models/*.engine
+Chess_best_move/models/*.weights
+Chess_best_move/dataset/
+Chess_best_move/runs/
+Chess_best_move/__pycache__/
+Chess_best_move/*.log
+Chess_best_move/logs/
+Chess_best_move/wandb/
+Chess_best_move/mlruns/
+Chess_best_move/instance/
+Chess_best_move/.webassets-cache
+Chess_best_move/flask_session/
+
+# Image artifacts (general)
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.mp4
+*.avi
+*.mov
+
+# Keep frontend images in Chess_best_move
+!Chess_best_move/frontend/**/*.png
+!Chess_best_move/frontend/**/*.jpg
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Flask (general)
+instance/
+.webassets-cache
+flask_session/
